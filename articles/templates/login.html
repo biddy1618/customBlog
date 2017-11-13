@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block message %}
+
+{% if message1 %}
+
+{{ message1 }}
+<br/>
+{{ message2 }}<a href='{% url "articles:register" %}'>register</a>{{ message3 }}
+
+{% else %}
+
+{{ message }}
+
+{% endif %}
+
+{% endblock %}
+
+{% block sidebar1 %}
+
+<li><a href='{% url "articles:articles" %}'>Articles</a></li>
+
+{% if request.user.is_superuser %}
+<li><a href='{% url "admin:index" %}'>Admin</a></li>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+<li><a href='{% url "articles:create" %}'>Create Article</a></li>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+{% if not request.user.is_authenticated %}
+
+<form class='form-horizontal' role='form' action='{% url "articles:login" %}' method='post'>
+	{% csrf_token %}
+	<div class='form-group'>
+		<label for='username' class='col-sm-2 control-label'>Username</label>
+		<div class='col-sm-4'>
+			<input type='text' class='form-control' name='username' id='username' placeholder='Username' required=true>
+		</div>
+	</div>
+	<div class='form-group'>
+		<label for='password' class='col-sm-2 control-label'>Password</label>
+		<div class='col-sm-4'>
+			<input type='password' class='form-control' name='password' id='password' required=true>
+		</div>
+	</div>
+	<div class='col-sm-6'>
+			<input type='submit' class='btn btn-primary pull-right' value='Log In'>
+	</div>
+</form>
+
+{% endif %}
+
+{% endblock %}
+
+{% block sidebar2 %}
+
+{% if not request.user.is_authenticated %}
+
+<p>Still not registered?!</p>
+</br>
+<p>Click <a href='{% url "articles:register" %}'>here</a> to register</p>
+
+{% endif %}
+
+{% endblock %}

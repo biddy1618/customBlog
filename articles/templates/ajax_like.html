@@ -1,0 +1,17 @@
+<div class='col-md-9' id='likes'><p class='text-primary'>{{ likes }} people liked this article</p></div>
+
+{% if userlike %}
+<div class='col-md-3'>
+{% csrf_token %}
+	<button type="button" class="btn btn-default btn-sm" id='like'>
+		<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Dislike
+	</button>
+</div>
+{% else %}
+<div class='col-md-3'>
+{% csrf_token %}
+	<button type="button" class="btn btn-default btn-sm" id='like'>
+		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Like
+	</button>
+</div>
+{% endif %}

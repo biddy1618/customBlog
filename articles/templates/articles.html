@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+{% if articles.count > 0 %}
+	{% for article in articles %}
+	<div>
+		<h3><a href = '{% url "articles:article" article.id %}'>{{ article.title }}</a></h3>
+		<p>{{ article.body|lower|truncatewords:"10" }}</p>
+		</br>
+		<p class='text-primary'>Author: {{ article.author.username }}</p>
+		<p class='text-primary'>Date posted: {{ article.pub_date|date:"D d M Y" }}</p>
+		</br>
+	</div>
+	{% endfor %}
+{% else %}
+
+<h3>None to show!</h3>
+
+{% endif %}
+</div>
+{% endblock %}
+

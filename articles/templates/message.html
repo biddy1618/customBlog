@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block sidebar1 %}
+
+<li><a href='{% url "articles:articles" %}'>Articles</a></li>
+
+{% endblock %}
+
+{% block message %}
+
+{{ message }}
+
+{% endblock %}

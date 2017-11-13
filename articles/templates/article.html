@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block message %}
+
+{{ message }}
+
+{% endblock %}
+
+
+{% block sidebar1 %}
+
+<li><a href='{% url "articles:articles" %}'>Articles</a></li>
+
+{% endblock %}
+
+
+{% block content %}
+<div id='article_body'>
+	<h3>{{ article.title }}
+		{% if article.author == request.user %}
+		<h4 class='text-right'><a href='#edit_article' data-toggle='modal'>Edit</a></h4>
+		<h4 class='text-right'><a href='#delete_article' data-toggle='modal'>Delete</a></h4>
+		{% endif %}
+	</h3>
+	<p>{{ article.body }}</p>
+</div>
+<div class='row' id='likes'>
+	<div class='col-md-9' id='likes'><p class='text-primary'>{{ likes }} people liked this article</p></div>
+	{% if request.user.is_authenticated %}
+		{% if userlike %}
+		<div class='col-md-3'>
+			{% csrf_token %}
+			<button type="button" class="btn btn-default btn-sm" id='like'>
+				<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Dislike
+			</button>
+		</div>
+		{% else %}
+		<div class='col-md-3'>
+			{% csrf_token %}
+			<button type="button" class="btn btn-default btn-sm" id='like'>
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Like
+			</button>
+		</div>
+		{% endif %}
+	{% endif %}
+</div>
+<p class='text-primary'>Author: {{ article.author.username }}</p>
+<p class='text-primary'>Date posted: {{ article.pub_date|date:"D d M Y" }}</p>
+
+</br>
+<div class='row'>
+	{% if request.user.is_authenticated %}
+	<form class='form-horizontal' role='form'>
+	{% csrf_token %}
+		<div class='form-group'>
+			<label for='commentbody' class='col-sm-2 control-label'>Body of comment:</label>
+			<div class='col-sm-8'>
+				<textarea type='text' class='form-control' id='commentbody' name='body' placeholder='Your comment'></textarea>
+			</div>
+		</div>
+		<input type='hidden' id='commentarticle' value='{{ article.id }}'>
+		<div class='col-sm-10'>
+			<button class='btn btn-primary pull-right' id='commentsubmit'>Add comment</button>
+		</div>
+	</form>
+	</br></br>
+	{% endif %}
+	<div id='comment_container'>
+	{% if comments %}
+		{% for comment in comments %}
+		<div class='comment' id='{{ comment.id }}'>
+			<div class='col-md-2'>{{ comment.author.username}}:</div>
+			<div class='col-md-8 body'>{{ comment.body }}</div>
+			{% if comment.author == request.user %}
+			<div class='col-md-10'>
+				{% csrf_token %}
+				<button class='btn btn-primary btn-sm pull-right deletecomment'>Delete</button>
+			</div>
+			{% endif %}
+			</br></br></br>
+		</div>
+		{% endfor %}
+	{% endif %}
+	</div>
+</div>		
+{% endblock %}
+
+{% block modal %}
+
+<div class='modal fade' id='edit_article' role='dialog'>
+    <div class='modal-dialog'>
+      <div class='modal-content'>
+        <form class='form-horizontal' role='form'>
+          {% csrf_token %}
+          <div class='modal-header'>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4>Edit article</h4>
+          </div>
+          <div class='modal-body'>
+            <div class='form-group'>
+              <label for='edit_title' class='col-sm-2 control-label'>Title</label>
+              <div class='col-sm-10'>
+                <input type='text' class='form-control' name='edit_title' id='edit_title' value='{{ article.title }}' required=true>
+              </div>
+            </div>
+            <div class='form-group'>
+              <label for='edit_body' class='col-sm-2 control-label'>Body</label>
+              <div class='col-sm-10'>
+                <textarea class='form-control' rows='12' name='edit_body' id='edit_body' required=true>{{ article.body }}</textarea>
+              </div>
+            </div>
+            <input type='hidden' id='edit_article_id' value='{{ article.id }}'>
+          </div>
+          <div class='modal-footer'>
+            <a class='btn btn-default' data-dismiss='modal'>Close</a>
+            <a class='btn btn-primary' data-dismiss='modal' id='editarticle'>Edit</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class='modal fade' id='delete_article' role='dialog'>
+    <div class='modal-dialog'>
+      <div class='modal-content'>
+        <form class='form-horizontal' role='form' action="{% url 'articles:delete' %}" method='post'>
+          {% csrf_token %}
+          <div class='modal-header'>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4>Are you very sure?</h4>
+          </div>
+          <input type='hidden' id='article_id' name='article_id' value='{{ article.id }}'>
+          <div class='modal-footer'>
+            <a class='btn btn-default' data-dismiss='modal'>Close</a>
+            <input class='btn btn-default' type='submit' value='Delete'>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
